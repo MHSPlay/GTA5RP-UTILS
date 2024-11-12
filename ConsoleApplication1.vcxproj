@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="src\config\config.hpp" />
     <ClInclude Include="src\features\antiafk\antiafk.hpp" />
+    <ClInclude Include="src\features\fastloot\loot.hpp" />
     <ClInclude Include="src\features\features.hpp" />
     <ClInclude Include="src\globals.hpp" />
     <ClInclude Include="src\includes.hpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="src\ui\ui.hpp" />
     <ClInclude Include="src\utils\shadowsyscall.hpp" />
     <ClInclude Include="src\utils\utils.hpp" />
+    <ClInclude Include="third-party\fonts\04B03.h" />
     <ClInclude Include="third-party\fonts\fa_solid_900.h" />
     <ClInclude Include="third-party\fonts\font_awesome_5.h" />
     <ClInclude Include="third-party\fonts\tahoma.h" />

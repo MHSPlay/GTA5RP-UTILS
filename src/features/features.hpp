@@ -1,43 +1,18 @@
 #pragma once
 
 #include "antiafk/antiafk.hpp"
-
+#include "fastloot/loot.hpp"
 
 
 namespace features {
 
 	auto run( ) -> void
 	{
-
 		if ( config::bAntiAfkEnabled ) 
-			antiAFK::run( );
+			antiafk::run( );
 	
 		if ( GetAsyncKeyState( config::iFastLootKey ) )
-		{
-	        // activate window
-	        utils::ActivateWindow(  );
-
-	        auto getLoot = [ & ]( ) 
-			{
-
-				ImGui::InsertNotification( { ImGuiToastType_Info, 3000, "Try loot!" } );
-
-	            // press E
-	            utils::shadowSendKey( 0x45 );
-
-	            // click "MAX"
-	            utils::shadowClickMouseAt( 1100, 575 );
-
-	            // click "Pickup"
-	            utils::shadowClickMouseAt( 860, 655 );
-
-	        };
-
-	        getLoot( );
-		
-		}
-
-
+			fastloot::run( );
 	}
 
 };

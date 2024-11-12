@@ -1,6 +1,6 @@
 #pragma once
 
-namespace antiAFK
+namespace antiafk
 {
 	auto run( ) -> void 
 	{
@@ -21,10 +21,9 @@ namespace antiAFK
                 auto now = std::chrono::steady_clock::now( );
                 auto elapsed = std::chrono::duration_cast< std::chrono::minutes >( now - start );
 
-                if ( elapsed.count( ) >= 30 ) {
-                    ImGui::InsertNotification( { ImGuiToastType_Info, 3000, "30 minutes have passed." } );
+                if ( elapsed.count( ) >= 30 ) 
                     break;
-                }
+                
 
                 utils::shadowSendKeyCode( 0x11, true );
                 utils::shadowSendKeyCode( 0x1F, true );
@@ -45,10 +44,11 @@ namespace antiAFK
                     { 960, 885 },
             };
 
-            while ( true ) {
+            while ( true ) 
+            {
                 // open phone
                 utils::shadowSendKey( VK_UP );
-                //std::cout << "[+] open the phone." << std::endl;
+                ImGui::InsertNotification( { ImGuiToastType_Info, 2000, "open the phone..." } );
 
                 for (const auto& coord : coordinates) {
                     utils::shadowClickMouseAt( coord.first, coord.second );
@@ -76,5 +76,4 @@ namespace antiAFK
         goto restart;
 
 	}
-
 };

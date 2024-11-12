@@ -6,189 +6,33 @@ bool InputTextCentered(const char* label, char* buf, size_t buf_size, ImGuiInput
     return ImGui::InputText( label, buf, buf_size, flags, callback, user_data );
 }
 
-const char* const KeyNames[] = {
-	"Unknown",
-	"VK_LBUTTON",
-	"VK_RBUTTON",
-	"VK_CANCEL",
-	"VK_MBUTTON",
-	"VK_XBUTTON1",
-	"VK_XBUTTON2",
-	"Unknown",
-	"VK_BACK",
-	"VK_TAB",
-	"Unknown",
-	"Unknown",
-	"VK_CLEAR",
-	"VK_RETURN",
-	"Unknown",
-	"Unknown",
-	"VK_SHIFT",
-	"VK_CONTROL",
-	"VK_MENU",
-	"VK_PAUSE",
-	"VK_CAPITAL",
-	"VK_KANA",
-	"Unknown",
-	"VK_JUNJA",
-	"VK_FINAL",
-	"VK_KANJI",
-	"Unknown",
-	"VK_ESCAPE",
-	"VK_CONVERT",
-	"VK_NONCONVERT",
-	"VK_ACCEPT",
-	"VK_MODECHANGE",
-	"VK_SPACE",
-	"VK_PRIOR",
-	"VK_NEXT",
-	"VK_END",
-	"VK_HOME",
-	"VK_LEFT",
-	"VK_UP",
-	"VK_RIGHT",
-	"VK_DOWN",
-	"VK_SELECT",
-	"VK_PRINT",
-	"VK_EXECUTE",
-	"VK_SNAPSHOT",
-	"VK_INSERT",
-	"VK_DELETE",
-	"VK_HELP",
-	"0",
-	"1",
-	"2",
-	"3",
-	"4",
-	"5",
-	"6",
-	"7",
-	"8",
-	"9",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"A",
-	"B",
-	"C",
-	"D",
-	"E",
-	"F",
-	"G",
-	"H",
-	"I",
-	"J",
-	"K",
-	"L",
-	"M",
-	"N",
-	"O",
-	"P",
-	"Q",
-	"R",
-	"S",
-	"T",
-	"U",
-	"V",
-	"W",
-	"X",
-	"Y",
-	"Z",
-	"VK_LWIN",
-	"VK_RWIN",
-	"VK_APPS",
-	"Unknown",
-	"VK_SLEEP",
-	"VK_NUMPAD0",
-	"VK_NUMPAD1",
-	"VK_NUMPAD2",
-	"VK_NUMPAD3",
-	"VK_NUMPAD4",
-	"VK_NUMPAD5",
-	"VK_NUMPAD6",
-	"VK_NUMPAD7",
-	"VK_NUMPAD8",
-	"VK_NUMPAD9",
-	"VK_MULTIPLY",
-	"VK_ADD",
-	"VK_SEPARATOR",
-	"VK_SUBTRACT",
-	"VK_DECIMAL",
-	"VK_DIVIDE",
-	"VK_F1",
-	"VK_F2",
-	"VK_F3",
-	"VK_F4",
-	"VK_F5",
-	"VK_F6",
-	"VK_F7",
-	"VK_F8",
-	"VK_F9",
-	"VK_F10",
-	"VK_F11",
-	"VK_F12",
-	"VK_F13",
-	"VK_F14",
-	"VK_F15",
-	"VK_F16",
-	"VK_F17",
-	"VK_F18",
-	"VK_F19",
-	"VK_F20",
-	"VK_F21",
-	"VK_F22",
-	"VK_F23",
-	"VK_F24",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"VK_NUMLOCK",
-	"VK_SCROLL",
-	"VK_OEM_NEC_EQUAL",
-	"VK_OEM_FJ_MASSHOU",
-	"VK_OEM_FJ_TOUROKU",
-	"VK_OEM_FJ_LOYA",
-	"VK_OEM_FJ_ROYA",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"Unknown",
-	"VK_LSHIFT",
-	"VK_RSHIFT",
-	"VK_LCONTROL",
-	"VK_RCONTROL",
-	"VK_LMENU",
-	"VK_RMENU"
-};
-
-void hotkey( int& key ) noexcept
+void HotKey( int& key ) noexcept
 {
-	key ? ImGui::Text( "[ 0x%x ]", key ) : ImGui::TextUnformatted( "[ key ]" );
-	if (ImGui::IsItemHovered()) {
+	key ? ImGui::Text( "[ 0x%x ]", key ) 
+		: ImGui::TextUnformatted( "[ key ]" );
+
+	if ( ImGui::IsItemHovered( ) ) 
+	{
 		ImGui::SetTooltip("Press any key to change keybind");
-		ImGuiIO& io = ImGui::GetIO();
-		for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++)
-			if (ImGui::IsKeyPressed(i) && i != 0x2D )
+
+		ImGuiIO& io = ImGui::GetIO( );
+		for ( int i = 0; i < IM_ARRAYSIZE( io.KeysDown ); i++)
+			if ( ImGui::IsKeyPressed( i ) && i != 0x2D )
 				key = i != VK_ESCAPE ? i : 0;
 
 		for ( int i = 0; i < IM_ARRAYSIZE( io.MouseDown ); i++ )
 			if ( ImGui::IsMouseDown( i ) && i + ( i > 1 ? 2 : 1 ) != 0x2D )
 				key = i + ( i > 1 ? 2 : 1 );
 	}
+}
+
+void CheckboxWithTooltip( const char* label, bool* value, const char* tooltip ) {
+	if ( ImGui::Checkbox( label, value ) )
+    {
+    
+    }
+	if ( ImGui::IsItemHovered( ) )
+		ImGui::SetTooltip( "%s", tooltip );
 }
 
 namespace ui {
@@ -292,15 +136,48 @@ namespace ui {
                     ) );
 
 
-                    ImGui::Checkbox( "AntiAFK", &config::bAntiAfkEnabled );
+                    CheckboxWithTooltip( "AntiAFK", &config::bAntiAfkEnabled, "just turn off the monitor and enjoy it. ( wheel of fortune included )" );
+					
+					HotKey( config::iFastLootKey );
 
-					//if ( Hotkey( "FastLoot", &config::iFastLootKey, ImVec2( 200, 20 ) ) )
-					//	config::bFastLootEnabled = true;
-					//else
-					//	config::bFastLootEnabled = false;
-					
-					hotkey( config::iFastLootKey );
-					
+                    // OSIRIS HOTKEY BETTER!!!
+					//if (config.aimbot[weaponIndex].onKey) {
+					//	if (!config.aimbot[weaponIndex].keyMode) {
+					//		if (!GetAsyncKeyState(config.aimbot[weaponIndex].key))
+					//			return;
+					//	}
+					//	else {
+					//		static bool toggle = true;
+					//		if (GetAsyncKeyState(config.aimbot[weaponIndex].key) & 1)
+					//			toggle = !toggle;
+					//		if (!toggle)
+					//			return;
+					//	}
+					//}
+
+
+
+
+
+                    // todo:
+                    // - fix font on notify 
+                    // - maybe add auth & HWID
+                    // - make menu looks like better
+                    // - more custom settings
+
+                    // rework anti-afk 
+                    // add more checks to make sure it doesn't break
+
+
+
+
+
+
+
+
+
+
+
                 }
                 break;
 
@@ -313,7 +190,7 @@ namespace ui {
 
 	}
 
-    auto Notify() -> void 
+    auto notify() -> void 
     {
         // Render toasts on top of everything, at the end of your code!
 		// You should push style vars here

@@ -77,6 +77,7 @@
 #include "..\third-party\fonts\fa_solid_900.h"
 #include "..\third-party\fonts\tahoma.h"
 #include "..\third-party\fonts\font_awesome_5.h"
+#include "..\third-party\fonts\04B03.h"
 
 // IMGUI
 static ID3D11Device*           g_pd3dDevice;

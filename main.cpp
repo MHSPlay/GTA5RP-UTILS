@@ -54,7 +54,8 @@ int main( ) {
 
     ImFontConfig font_cfg;
     font_cfg.FontDataOwnedByAtlas = false;
-    io.Fonts->AddFontFromMemoryTTF( ( void* )tahoma, sizeof( tahoma ), 17.f, &font_cfg, io.Fonts->GetGlyphRangesCyrillic( ) );
+    //io.Fonts->AddFontFromMemoryTTF( ( void* )tahoma, sizeof( tahoma ), 16.f, &font_cfg, io.Fonts->GetGlyphRangesCyrillic( ) );
+    io.Fonts->AddFontFromMemoryTTF( ( void* )text_04B03, sizeof( text_04B03 ), 14.f, &font_cfg );
 
     // Initialize notify
     ImGui::MergeIconsWithLatestFont( 16.f, false );
@@ -85,12 +86,13 @@ int main( ) {
         if ( ui::menuOpened )
         {
             ui::GUI( );
-            ui::Notify( );
             SetWindowLong( hwnd, GWL_EXSTYLE, WS_EX_TOPMOST );
         }
         else
             SetWindowLong( hwnd, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED );
         
+        ui::notify( );
+
         ImGui::Render( );
         ImVec4 clear_color = ImVec4( 0.f, 0.f, 0.f, 0.f );
         const float clear_color_with_alpha[ 4 ] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
