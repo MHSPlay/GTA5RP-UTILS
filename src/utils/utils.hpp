@@ -126,20 +126,20 @@ namespace utils
 	}
 
     inline bool PixelSearch(COLORREF targetColor, int startX, int startY, int width, int height, int variation = 0) {
-        HDC hdcScreen = GetDC(NULL);
+        HDC hdcScreen = GetDC( utils::window );
         if (!hdcScreen)
             return false;
 
         HDC hdcMem = CreateCompatibleDC(hdcScreen);
         if (!hdcMem) {
-            ReleaseDC(NULL, hdcScreen);
+            ReleaseDC(utils::window, hdcScreen);
             return false;
         }
 
         HBITMAP hBitmap = CreateCompatibleBitmap(hdcScreen, width, height);
         if (!hBitmap) {
             DeleteDC(hdcMem);
-            ReleaseDC(NULL, hdcScreen);
+            ReleaseDC(utils::window, hdcScreen);
             return false;
         }
 
@@ -148,7 +148,7 @@ namespace utils
             SelectObject(hdcMem, hOldObj);
             DeleteObject(hBitmap);
             DeleteDC(hdcMem);
-            ReleaseDC(NULL, hdcScreen);
+            ReleaseDC(utils::window, hdcScreen);
             return false;
         }
 
@@ -166,7 +166,7 @@ namespace utils
             SelectObject(hdcMem, hOldObj);
             DeleteObject(hBitmap);
             DeleteDC(hdcMem);
-            ReleaseDC(NULL, hdcScreen);
+            ReleaseDC(utils::window, hdcScreen);
             return false;
         }
 
@@ -195,7 +195,7 @@ namespace utils
         SelectObject(hdcMem, hOldObj);
         DeleteObject(hBitmap);
         DeleteDC(hdcMem);
-        ReleaseDC(NULL, hdcScreen);
+        ReleaseDC(utils::window, hdcScreen);
 
         return found;
     }

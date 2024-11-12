@@ -66,6 +66,38 @@
 #include <filesystem>
 #include <streambuf>
 #include <TlHelp32.h>
+#include <dwmapi.h>
+#include <d3d11.h>
+#pragma comment(lib, "d3d11.lib")
 
+#include "config/config.hpp"
+#include "security/auth.hpp"
+
+// fonts
+#include "..\third-party\fonts\fa_solid_900.h"
+#include "..\third-party\fonts\tahoma.h"
+#include "..\third-party\fonts\font_awesome_5.h"
+
+// IMGUI
+static ID3D11Device*           g_pd3dDevice;
+static ID3D11DeviceContext*    g_pd3dDeviceContext;
+static IDXGISwapChain*         g_pSwapChain;
+static ID3D11RenderTargetView* g_mainRenderTargetView;
+static UINT                    g_ResizeWidth = 0, 
+							   g_ResizeHeight = 0;
+#include "..\third-party\imgui\imgui.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "..\third-party\imgui\imgui_internal.h"
+#include "..\third-party\imgui\imgui_impl_dx11.h"
+#include "..\third-party\imgui\imgui_impl_win32.h"
+
+// GUI
+#include "..\third-party\imgui\custom\notify\imgui_notify.hpp"
+#include "ui/impl/impl.hpp"
+#include "ui/ui.hpp"
+
+// other stuff
 #include "utils/shadowsyscall.hpp"
 #include "utils/utils.hpp"
+#include "features/features.hpp"
+
