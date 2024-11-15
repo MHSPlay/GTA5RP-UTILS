@@ -23,7 +23,8 @@ namespace fastloot
 	        utils::shadowClickMouseAt( 860, 655 );
 	    };
 
-	    getLoot( );
+		if ( GetAsyncKeyState( config::fast_loot::iKey ) )
+			getLoot( );
 		
 	}
 };

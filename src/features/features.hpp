@@ -2,17 +2,27 @@
 
 #include "antiafk/antiafk.hpp"
 #include "fastloot/loot.hpp"
-
+#include "sewing/sewing.hpp"
+#include "harbor/harbor.hpp"
 
 namespace features {
 
 	auto run( ) -> void
 	{
-		if ( config::bAntiAfkEnabled ) 
+		// test
+		if ( config::afk_bypass::bEnabled ) 
 			antiafk::run( );
 	
-		if ( GetAsyncKeyState( config::iFastLootKey ) )
+		if ( config::fast_loot::bEnabled )
 			fastloot::run( );
+
+		// test
+		if ( config::sewing::bEnabled ) 
+			sewing::run( );
+
+		if ( config::harbor::bEnabled ) 
+			harbor::run( );
+
 	}
 
 };

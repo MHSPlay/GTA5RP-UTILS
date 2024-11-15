@@ -70,8 +70,11 @@
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 
+//#include "utils/curl/curl.h"
+
 #include "config/config.hpp"
 #include "security/auth.hpp"
+#include "security/update.h"
 
 // fonts
 #include "..\third-party\fonts\fa_solid_900.h"

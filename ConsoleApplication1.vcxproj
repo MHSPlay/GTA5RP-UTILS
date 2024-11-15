@@ -154,9 +154,13 @@
     <ClInclude Include="src\features\antiafk\antiafk.hpp" />
     <ClInclude Include="src\features\fastloot\loot.hpp" />
     <ClInclude Include="src\features\features.hpp" />
+    <ClInclude Include="src\features\harbor\harbor.hpp" />
+    <ClInclude Include="src\features\sewing\sewing.hpp" />
     <ClInclude Include="src\globals.hpp" />
     <ClInclude Include="src\includes.hpp" />
     <ClInclude Include="src\security\auth.hpp" />
+    <ClInclude Include="src\security\update.h" />
+    <ClInclude Include="src\ui\custom\custom.hpp" />
     <ClInclude Include="src\ui\impl\impl.hpp" />
     <ClInclude Include="src\ui\ui.hpp" />
     <ClInclude Include="src\utils\shadowsyscall.hpp" />

@@ -1,39 +1,6 @@
 #pragma once
 
-bool InputTextCentered(const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL) {
-    const float input_width = ImGui::CalcItemWidth( );
-    ImGui::SetCursorPosX( ( ( ImGui::GetWindowContentRegionMax().x - input_width ) + 6.f ) / 2.f );
-    return ImGui::InputText( label, buf, buf_size, flags, callback, user_data );
-}
-
-void HotKey( int& key ) noexcept
-{
-	key ? ImGui::Text( "[ 0x%x ]", key ) 
-		: ImGui::TextUnformatted( "[ key ]" );
-
-	if ( ImGui::IsItemHovered( ) ) 
-	{
-		ImGui::SetTooltip("Press any key to change keybind");
-
-		ImGuiIO& io = ImGui::GetIO( );
-		for ( int i = 0; i < IM_ARRAYSIZE( io.KeysDown ); i++)
-			if ( ImGui::IsKeyPressed( i ) && i != 0x2D )
-				key = i != VK_ESCAPE ? i : 0;
-
-		for ( int i = 0; i < IM_ARRAYSIZE( io.MouseDown ); i++ )
-			if ( ImGui::IsMouseDown( i ) && i + ( i > 1 ? 2 : 1 ) != 0x2D )
-				key = i + ( i > 1 ? 2 : 1 );
-	}
-}
-
-void CheckboxWithTooltip( const char* label, bool* value, const char* tooltip ) {
-	if ( ImGui::Checkbox( label, value ) )
-    {
-    
-    }
-	if ( ImGui::IsItemHovered( ) )
-		ImGui::SetTooltip( "%s", tooltip );
-}
+#include "custom/custom.hpp"
 
 namespace ui {
 	bool menuOpened = true;
@@ -69,12 +36,76 @@ namespace ui {
             ImGuiWindowFlags_NoCollapse |
             ImGuiWindowFlags_NoSavedSettings |
             ImGuiWindowFlags_HorizontalScrollbar| 
-			ImGuiWindowFlags_NoMove );
+			ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollWithMouse);
 
         {
 
             switch ( state )
             {
+
+                case 3:
+                {
+                    ImVec2 window_size = ImGui::GetWindowSize( );
+                    ImVec2 window_pos = ImGui::GetWindowPos( );
+                    float spinner_radius = 20.0f;
+                    float spinner_thickness = 5.0f;
+
+                    if ( security_update::isCheckingUpdates )
+                    {
+                        // GUI
+                        {
+                            ImVec2 center(
+                                window_pos.x + ( window_size.x - spinner_radius * 2 ) * 0.5f,
+                                window_pos.y + ( window_size.y - spinner_radius * 2 - spinner_thickness ) * 0.5f
+                            );
+
+                            ImGui::SetCursorScreenPos( center );
+                            ui_custom::Spinner( "##updates", spinner_radius, spinner_thickness, ImColor( 255, 255, 255 ) );
+
+                            ImVec2 text_size = ImGui::CalcTextSize( "Checking for updates...");
+                            ImVec2 text_pos( ( window_size.x - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) + 45 );
+                            ImGui::SetCursorPos( text_pos );
+                            ImGui::Text( "Checking for updates..." );
+                        }
+
+                        // check
+                        //std::string latestVersion = security_update::getLatestVersion( security_update::versionURL );
+
+                        /*if ( latestVersion != security_update::currentVersion ) {
+                            security_update::updateAvailable = true;
+                            security_update::isCheckingUpdates = false;
+                        }*/
+                    }
+                    else
+                    {
+                        if ( security_update::updateAvailable )
+                        {
+                            ImVec2 center(
+                                window_pos.x + ( window_size.x - spinner_radius * 2 ) * 0.5f,
+                                window_pos.y + ( window_size.y - spinner_radius * 2 - spinner_thickness ) * 0.5f
+                            );
+
+                            ImGui::SetCursorScreenPos( center );
+                            ui_custom::Spinner( "##updates_availble", spinner_radius, spinner_thickness, ImColor( 255, 255, 255 ) );
+
+                            ImVec2 text_size = ImGui::CalcTextSize( "Update available!");
+                            ImVec2 text_pos( ( window_size.x - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) + 45 );
+                            ImGui::SetCursorPos( text_pos );
+                            ImGui::Text( "Update available!" );
+
+                           
+                        }
+                        else
+                            state = 1;
+                        
+                    }
+
+                }
+                break;
+
+
+
                 // auth
                 case 0:
                 {
@@ -85,7 +116,7 @@ namespace ui {
                     ImVec2 text_pos( ( window_size.x - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) );
                     ImGui::SetCursorPos( text_pos );
                     ImGui::Text("login:");
-                    InputTextCentered( "##login", login, IM_ARRAYSIZE( login ) );
+                    ui_custom::InputTextCentered( "##login", login, IM_ARRAYSIZE( login ) );
 
                     ImGui::Spacing( );
 
@@ -93,7 +124,7 @@ namespace ui {
                     text_pos = ImVec2( ( window_size.x - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) );
                     ImGui::SetCursorPos( text_pos );
                     ImGui::Text( "password:" );
-                    InputTextCentered( "##password", password, IM_ARRAYSIZE( password ), ImGuiInputTextFlags_Password );
+                    ui_custom::InputTextCentered( "##password", password, IM_ARRAYSIZE( password ), ImGuiInputTextFlags_Password );
 
                     ImGui::Spacing( );
 
@@ -119,26 +150,132 @@ namespace ui {
                 // main
                 case 1:
                 {
-                    static ImVec2 targetSize( 700, 400 );
-                    static ImVec2 currentSize = ImGui::GetWindowSize( );
-                    static float animationSpeed = 10.0f;
+                    static bool showMenu = false;
+                    static bool buttonsVisible = false;
+                    static float buttonAlpha = 0.0f;
 
-                    if ( currentSize.x < targetSize.x )
-                        currentSize.x += animationSpeed + 17.0f;
+                    // form setup
+                    {
+                        static ImVec2 targetSize( 635, 400 );
+                        static ImVec2 currentSize = ImGui::GetWindowSize( );
+                        static float animationSpeed = 10.0f;
 
-                    if ( currentSize.y < targetSize.y )
-                        currentSize.y += animationSpeed;
+                        if ( currentSize.x < targetSize.x )
+                            currentSize.x = ImClamp( currentSize.x + animationSpeed + 17.0f, 0.0f, targetSize.x );
 
-                    ImGui::SetWindowSize( currentSize );
-                    ImGui::SetWindowPos( ImVec2(
-                        ( ImGui::GetIO( ).DisplaySize.x - 700 ) * 0.5f,
-                        ( ImGui::GetIO( ).DisplaySize.y - 400 ) * 0.5f
-                    ) );
+                        if ( currentSize.y < targetSize.y )
+                            currentSize.y = ImClamp( currentSize.y + animationSpeed, 0.0f, targetSize.y );
 
+                        if ( currentSize.x == targetSize.x && currentSize.y == targetSize.y )
+                            showMenu = true;
 
-                    CheckboxWithTooltip( "AntiAFK", &config::bAntiAfkEnabled, "just turn off the monitor and enjoy it. ( wheel of fortune included )" );
+                        ImGui::SetWindowSize( currentSize );
+                        ImGui::SetWindowPos( ImVec2(
+                            ( ImGui::GetIO( ).DisplaySize.x - targetSize.x ) * 0.5f,
+                            ( ImGui::GetIO( ).DisplaySize.y - targetSize.y ) * 0.5f
+                        ));
+                    }
+
+                    if ( showMenu ) 
+                    {
+                        if ( buttonAlpha < 1.0f )
+                            buttonAlpha = ImMin( buttonAlpha + ImGui::GetIO( ).DeltaTime * 2.0f, 1.0f );
+
+                        ImGui::PushStyleVar( ImGuiStyleVar_Alpha, buttonAlpha );
+
+                        ImGui::BeginChild( "antiAFK", ImVec2( 150, 175 ), true );
+                        {
+                            ImVec2 text_size = ImGui::CalcTextSize( "anti-afk bypass:" );
+                            ImVec2 text_pos( ( 150 - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) );
+                            ImGui::SetCursorPos( text_pos );
+                            ImGui::Text( "anti-afk bypass:" );
+                        
+                            ImGui::Checkbox( "enable", &config::afk_bypass::bEnabled );
+                            ImGui::Checkbox( "spin wheel", &config::afk_bypass::bAutoWheel );
+
+                        }
+                        ImGui::EndChild( );
+
+                        // next
+                        ImGui::SameLine( );
+
+                        ImGui::BeginChild( "fastLoot", ImVec2( 150, 175 ), true );
+                        {
+                            ImVec2 text_size = ImGui::CalcTextSize( "fast loot:" );
+                            ImVec2 text_pos( ( 150 - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) );
+                            ImGui::SetCursorPos( text_pos );
+                            ImGui::Text( "fast loot:" );
+                        
+                            ImGui::Checkbox( "enable", &config::fast_loot::bEnabled );
+                            ui_custom::HotKey( "HotKey:", config::fast_loot::iKey );
+
+                        }
+                        ImGui::EndChild( );
+
+                        // next
+                        ImGui::SameLine( );
+
+                        ImGui::BeginChild( "harbor", ImVec2( 150, 175 ), true );
+                        {
+                            ImVec2 text_size = ImGui::CalcTextSize( "harbor bot:" );
+                            ImVec2 text_pos( ( 150 - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) );
+                            ImGui::SetCursorPos( text_pos );
+                            ImGui::Text( "harbor bot:" );
+                        
+                            ImGui::Checkbox( "enable", &config::harbor::bEnabled );
+                            ui_custom::HotKey( "HotKey:", config::harbor::iKey );
+                            ImGui::Combo( "##harbor", &config::harbor::iKeyMode, "Hold\0Toggle\0" );
+
+                        }
+                        ImGui::EndChild( );
+
+                        // next
+                        ImGui::SameLine( );
+
+                        ImGui::BeginChild( "sewing", ImVec2( 150, 175 ), true );
+                        {
+                            ImVec2 text_size = ImGui::CalcTextSize( "sewing bot:" );
+                            ImVec2 text_pos( ( 150 - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) );
+                            ImGui::SetCursorPos( text_pos );
+                            ImGui::Text( "sewing bot:" );
+                        
+                            ImGui::Checkbox( "enable", &config::sewing::bEnabled );
+                            ui_custom::HotKey( "HotKey:", config::sewing::iKey );
+                            ImGui::Combo( "##sewing", &config::sewing::iKeyMode, "Hold\0Toggle\0" );
+
+                            ImGui::SliderInt( "ms.##delay", &config::sewing::iDelay, 0, 2500 );
+                            ImGui::SliderInt( "ms.##delay2", &config::sewing::iDelay2, 0, 2500 );
+                            ImGui::SliderInt( "ms.##delay3", &config::sewing::iDelay3, 0, 2500 );
+
+                        }
+                        ImGui::EndChild( );
+
+                        // go down
+                        ImGui::Separator( );
+
+                        ImGui::Button( "n1", ImVec2( 150, 175 ) );
+
+                        // next
+                        ImGui::SameLine( );
+
+                        ImGui::Button( "n2", ImVec2( 150, 175 ) );
+
+                        // next
+                        ImGui::SameLine( );
+
+                        ImGui::Button( "n3", ImVec2( 150, 175 ) );
+
+                        // next
+                        ImGui::SameLine( );
+
+                        ImGui::Button( "n4", ImVec2( 150, 175 ) );
+
+                        ImGui::PopStyleVar( );
+
+                    }
+                    //ui_custom::CheckboxWithTooltip( "AntiAFK", &config::bAntiAfkEnabled, "just turn off the monitor and enjoy it. ( wheel of fortune included )" );
 					
-					HotKey( config::iFastLootKey );
+                    //ui_custom::HotKey( "fast loot key:", config::iFastLootKey);
 
                     // OSIRIS HOTKEY BETTER!!!
 					//if (config.aimbot[weaponIndex].onKey) {
@@ -269,7 +406,7 @@ namespace ui {
         ImGuiStyle& style = ImGui::GetStyle();
         style.WindowTitleAlign                  = ImVec2( 0.5f, 0.5f );
         style.WindowPadding                     = ImVec2(8.00f, 8.00f);
-        style.FramePadding                      = ImVec2(5.00f, 2.00f);
+        style.FramePadding                      = ImVec2(4.00f, 2.00f);
         style.CellPadding                       = ImVec2(6.00f, 6.00f);
         style.ItemSpacing                       = ImVec2(6.00f, 6.00f);
         style.ItemInnerSpacing                  = ImVec2(6.00f, 6.00f);
@@ -282,14 +419,14 @@ namespace ui {
         style.PopupBorderSize                   = 1;
         style.FrameBorderSize                   = 1;
         style.TabBorderSize                     = 1;
-        style.WindowRounding                    = 7;
-        style.ChildRounding                     = 4;
-        style.FrameRounding                     = 3;
-        style.PopupRounding                     = 4;
-        style.ScrollbarRounding                 = 9;
-        style.GrabRounding                      = 3;
+        style.WindowRounding                    = 0;
+        style.ChildRounding                     = 0;
+        style.FrameRounding                     = 0;
+        style.PopupRounding                     = 0;
+        style.ScrollbarRounding                 = 0;
+        style.GrabRounding                      = 0;
         style.LogSliderDeadzone                 = 4;
-        style.TabRounding                       = 4;
+        style.TabRounding                       = 0;
     }
 
 };

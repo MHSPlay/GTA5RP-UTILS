@@ -11,10 +11,11 @@ namespace antiafk
         utils::ActivateWindow( );
 
         restart:
-        auto antiAFK = [ & ]( ) {
-
+        auto antiAFK = [ & ]( ) 
+        {
             auto start = std::chrono::steady_clock::now( );
-            while ( true ) {
+            while ( true ) 
+            {
                 // activate window
                 utils::ActivateWindow( );
 
@@ -24,7 +25,6 @@ namespace antiafk
                 if ( elapsed.count( ) >= 30 ) 
                     break;
                 
-
                 utils::shadowSendKeyCode( 0x11, true );
                 utils::shadowSendKeyCode( 0x1F, true );
 
@@ -33,7 +33,7 @@ namespace antiafk
 
         };
 
-		auto fortuneWheel = [ & ] ( int resolution = 1 ) {
+		auto fortuneWheel = [ & ] ( ) {
        
             // activate window
             utils::ActivateWindow( );
@@ -48,7 +48,6 @@ namespace antiafk
             {
                 // open phone
                 utils::shadowSendKey( VK_UP );
-                ImGui::InsertNotification( { ImGuiToastType_Info, 2000, "open the phone..." } );
 
                 for (const auto& coord : coordinates) {
                     utils::shadowClickMouseAt( coord.first, coord.second );
@@ -67,13 +66,22 @@ namespace antiafk
 
                 utils::shadowSendKey( VK_BACK );
                 //std::cout << "[+] BACKSPACE pressed." << std::endl;
+
+                // exit loop
+                break;
             }
 
         };
 
-        antiAFK( );
-        fortuneWheel( );
-        goto restart;
+        // main loop
+        while ( true ) 
+        {
+            antiAFK( );
+
+            if ( config::afk_bypass::bAutoWheel )
+                fortuneWheel( );
+        }
 
 	}
+
 };
