@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "shadowsyscall.hpp"
 namespace utils
 {
     HWND window;

@@ -11,11 +11,11 @@ namespace ui {
         static float alpha = 0.0f;
         static float fadeSpeed = 0.02f;
 
-		static bool once = false;
-		if ( !once ) {
-			ImGui::InsertNotification( { ImGuiToastType_Success, 3000, "ImGui Render Initialization Successfully!" } );
-			once = true;
-		}
+		//static bool once = false;
+		//if ( !once ) {
+		//	ImGui::InsertNotification( { ImGuiToastType_Success, 3000, "ImGui Render Initialization Successfully!" } );
+		//	once = true;
+		//}
 
         static char login[16] = "";
         static char password[32] = "";
@@ -43,71 +43,63 @@ namespace ui {
 
             switch ( state )
             {
-
-                case 3:
+                // update
+                case 0:
                 {
                     ImVec2 window_size = ImGui::GetWindowSize( );
                     ImVec2 window_pos = ImGui::GetWindowPos( );
-                    float spinner_radius = 20.0f;
-                    float spinner_thickness = 5.0f;
+                    const float spinner_radius = 20.0f;
+                    const float spinner_thickness = 5.0f;
 
-                    if ( security_update::isCheckingUpdates )
+                    auto DisplayCenteredSpinnerAndText = [ & ]( const char* spinner_id, const char* text, const ImColor& color ) {
+                        ImVec2 center(
+                            window_pos.x + ( window_size.x - spinner_radius * 2 ) * 0.5f,
+                            window_pos.y + ( window_size.y - spinner_radius * 2 - spinner_thickness ) * 0.5f
+                        );
+
+                        ImGui::SetCursorScreenPos( center );
+                        ui_custom::Spinner( spinner_id, spinner_radius, spinner_thickness, color );
+
+                        ImVec2 text_size = ImGui::CalcTextSize( text );
+                        ImVec2 text_pos( ( window_size.x - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) + 45 );
+                        ImGui::SetCursorPos( text_pos );
+                        ImGui::Text( text );
+                        };
+
+                    if ( security_update::isCheckingUpdates ) 
                     {
-                        // GUI
-                        {
-                            ImVec2 center(
-                                window_pos.x + ( window_size.x - spinner_radius * 2 ) * 0.5f,
-                                window_pos.y + ( window_size.y - spinner_radius * 2 - spinner_thickness ) * 0.5f
-                            );
+                        DisplayCenteredSpinnerAndText( "##updates", "Checking for updates...", ImColor( 255, 255, 255 ) );
 
-                            ImGui::SetCursorScreenPos( center );
-                            ui_custom::Spinner( "##updates", spinner_radius, spinner_thickness, ImColor( 255, 255, 255 ) );
-
-                            ImVec2 text_size = ImGui::CalcTextSize( "Checking for updates...");
-                            ImVec2 text_pos( ( window_size.x - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) + 45 );
-                            ImGui::SetCursorPos( text_pos );
-                            ImGui::Text( "Checking for updates..." );
-                        }
-
-                        // check
-                        //std::string latestVersion = security_update::getLatestVersion( security_update::versionURL );
-
-                        /*if ( latestVersion != security_update::currentVersion ) {
+                        std::string latestVersion = security_update::getLatestVersion( security_update::versionURL );
+                        if ( latestVersion != security_update::currentVersion ) {
                             security_update::updateAvailable = true;
                             security_update::isCheckingUpdates = false;
-                        }*/
-                    }
-                    else
-                    {
-                        if ( security_update::updateAvailable )
-                        {
-                            ImVec2 center(
-                                window_pos.x + ( window_size.x - spinner_radius * 2 ) * 0.5f,
-                                window_pos.y + ( window_size.y - spinner_radius * 2 - spinner_thickness ) * 0.5f
-                            );
-
-                            ImGui::SetCursorScreenPos( center );
-                            ui_custom::Spinner( "##updates_availble", spinner_radius, spinner_thickness, ImColor( 255, 255, 255 ) );
-
-                            ImVec2 text_size = ImGui::CalcTextSize( "Update available!");
-                            ImVec2 text_pos( ( window_size.x - text_size.x ) * 0.5f, ImGui::GetCursorPosY( ) + 45 );
-                            ImGui::SetCursorPos( text_pos );
-                            ImGui::Text( "Update available!" );
-
-                           
                         }
-                        else
+                        else 
+                        {
+                            security_update::isCheckingUpdates = false;
                             state = 1;
-                        
+                        }
                     }
+                    else if ( security_update::updateAvailable ) 
+                    {
+                        DisplayCenteredSpinnerAndText( "##updates_available", "Update available!", ImColor( 255, 255, 255 ) );
 
+                        std::string new_filename = utils::random_str( utils::randomInt( 16, 28 ) ) + ".exe";
+                        if ( security_update::DownloadAndReplaceFile( security_update::applicationURL, new_filename ) )
+                        {
+                            ImGui::InsertNotification( { ImGuiToastType_Success, 5000, "Update successful!" } );
+                            std::exit( EXIT_SUCCESS );
+                        }
+                    }
+                    else 
+                        state = 1;
+                    
                 }
                 break;
 
-
-
                 // auth
-                case 0:
+                case 1:
                 {
                     AuthSystem auth;
                     ImVec2 window_size = ImGui::GetWindowSize( );
@@ -137,7 +129,7 @@ namespace ui {
                         if ( auth.login( login, password ) ) {
                             ImGui::InsertNotification( { ImGuiToastType_Success, 3000, "Login Successfully!" } );
 							ImGui::InsertNotification( { ImGuiToastType_Info, 10000, "Work only on 1920x1080 - 16:9!" } );
-                            state = 1;
+                            state = 2;
                         }
                         else
                             ImGui::InsertNotification( { ImGuiToastType_Error, 3000, "Incorrect username or password!" } );
@@ -148,7 +140,7 @@ namespace ui {
                 break;
 
                 // main
-                case 1:
+                case 2:
                 {
                     static bool showMenu = false;
                     static bool buttonsVisible = false;

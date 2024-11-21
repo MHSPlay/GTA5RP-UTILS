@@ -70,11 +70,13 @@
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 
-//#include "utils/curl/curl.h"
+// web
+#include <curl/curl.h>
 
+#include "utils/utils.hpp"
 #include "config/config.hpp"
 #include "security/auth.hpp"
-#include "security/update.h"
+#include "security/update.hpp"
 
 // fonts
 #include "..\third-party\fonts\fa_solid_900.h"
@@ -101,7 +103,5 @@ static UINT                    g_ResizeWidth = 0,
 #include "ui/ui.hpp"
 
 // other stuff
-#include "utils/shadowsyscall.hpp"
-#include "utils/utils.hpp"
 #include "features/features.hpp"
 
